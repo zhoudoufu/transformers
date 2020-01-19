@@ -372,7 +372,7 @@ class Pipeline(_ScikitCompat):
     def device_placement(self):
         """
         Context Manager allowing tensor allocation on the user-specified device in framework agnostic way.
-        example:
+        example
             # Explicitly ask for tensor allocation on CUDA device :0
             nlp = pipeline(..., device=0)
             with nlp.device_placement():
@@ -422,16 +422,17 @@ class Pipeline(_ScikitCompat):
 
     def __call__(self, *texts, **kwargs):
         # Parse arguments
-        inputs = self._args_parser(*texts, **kwargs)
+        inputs,output_mode = self._args_parser(*texts, **kwargs)
+        if type(inputs)==str:
+            inputs=[inputs]
         inputs = self.tokenizer.batch_encode_plus(
             inputs, add_special_tokens=True, return_tensors=self.framework, max_length=self.tokenizer.max_len
         )
-
         # Filter out features not available on specific models
         inputs = self.inputs_for_model(inputs)
-        return self._forward(inputs)
+        return self._forward(inputs,output_mode)
 
-    def _forward(self, inputs):
+    def _forward(self, inputs,output_mode):
         """
         Internal framework specific forward dispatching.
         Args:
@@ -447,9 +448,18 @@ class Pipeline(_ScikitCompat):
             else:
                 with torch.no_grad():
                     inputs = self.ensure_tensor_on_device(**inputs)
-                    predictions = self.model(**inputs)[0].cpu()
-
-        return predictions.numpy()
+                    if self.model.config.output_hidden_states:
+                        # calc sum
+                        mdl_output=self.model(**inputs)
+                        if output_mode == 'cat4layers':
+                            predictions= torch.cat(mdl_output[-1][-4:],dim=2)
+                        elif output_mode == 'sum4layers':
+                            predictions= sum(mdl_output[-1][-4:])
+                        else:
+                            predictions=mdl_output[0]
+                    else:
+                        predictions = self.model(**inputs)[0]
+        return predictions.cpu().numpy()
 
 
 class FeatureExtractionPipeline(Pipeline):

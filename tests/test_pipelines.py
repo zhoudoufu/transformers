@@ -35,9 +35,9 @@ NER_FINETUNED_MODELS = {
 }
 
 FEATURE_EXTRACT_FINETUNED_MODELS = {
-    ("bert-base-cased", "bert-base-cased", None),
+    # ("bert-base-cased", "bert-base-cased", None),
     # ('xlnet-base-cased', 'xlnet-base-cased', None), # Disabled for now as it crash for TF2
-    ("distilbert-base-uncased", "distilbert-base-uncased", None),
+    ("distilbert-base-uncased", "distilbert-base-uncased", '.my_cache/distilbert-pipeline-config.json'),
 }
 
 TF_FEATURE_EXTRACT_FINETUNED_MODELS = {
@@ -131,7 +131,7 @@ class MonoColumnInputTestCase(unittest.TestCase):
         valid_inputs = ["HuggingFace is solving NLP one commit at a time.", "HuggingFace is based in New-York & Paris"]
         invalid_inputs = [None]
         for tokenizer, model, config in FEATURE_EXTRACT_FINETUNED_MODELS:
-            nlp = pipeline(task="sentiment-analysis", model=model, config=config, tokenizer=tokenizer)
+            nlp = pipeline(task="feature-extraction", model=model, config=config, tokenizer=tokenizer)
             self._test_mono_column_pipeline(nlp, valid_inputs, invalid_inputs, {})
 
     @require_tf

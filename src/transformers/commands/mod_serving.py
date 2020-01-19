@@ -5,7 +5,6 @@ from typing import Any, List, Optional, Union
 from transformers import Pipeline
 from transformers.commands import BaseTransformersCLICommand
 from transformers.pipelines import SUPPORTED_TASKS, pipeline
-import torch
 print("SEE ME !!!")
 try:
     from uvicorn import run
@@ -135,8 +134,6 @@ class ServeCommand(BaseTransformersCLICommand):
             self._app.add_api_route("/tokenize", self.tokenize, response_model=ServeTokenizeResult, methods=["POST"])
             self._app.add_api_route("/detokenize", self.detokenize, response_model=ServeDeTokenizeResult, methods=["POST"])
             self._app.add_api_route("/forward", self.forward, response_model=ServeForwardResult, methods=["POST"])
-            self._app.add_api_route("/forwardsum",self.forward_sumlast4layers,response_model=ServeForwardSumResult , methods=["POST"])
-            self._app.add_api_route("/forwardcat", self.forward_catlast4layers, response_model=ServeForwardCatResult, methods=["POST"])
 
     def run(self):
         # TODO : multiprocess need to pass _app in string ?
@@ -182,48 +179,8 @@ class ServeCommand(BaseTransformersCLICommand):
         except Exception as e:
             raise HTTPException(status_code=500, detail={"model": "", "error": str(e)})
 
-    def forward_sumlast4layers(self, inputs: Union[str, dict, List[str], List[int], List[dict]] = Body(None, embed=True)):
-        """
-        **inputs**:
-        **mode**: [concat , sum] test only sum for now (no change for inputs)
-        **attention_mask**:
-        **tokens_type_ids**:
-        """
-
-        # Check we don't have empty string
-        if len(inputs) == 0:
-            return ServeForwardSumResult(output=[], attention=[])
-
-        try:
-            # Forward through the model
-            output = self._pipeline(inputs)
-            output_last4layers = output[-1][-4:]
-            output_last4layers=sum(output_last4layers)
-            return ServeForwardSumResult(output=output_last4layers)
-        except Exception as e:
-            raise HTTPException(500, {"error": str(e)})
-
-    def forward_catlast4layers(self, inputs: Union[str, dict, List[str], List[int], List[dict]] = Body(None, embed=True)):
-        """
-        **inputs**:
-        **mode**: [concat , sum] test only sum for now (no change for inputs)
-        **attention_mask**:
-        **tokens_type_ids**:
-        """
-
-        # Check we don't have empty string
-        if len(inputs) == 0:
-            return ServeForwardCatResult(output=[], attention=[])
-        try:
-            # Forward through the model
-            output = self._pipeline(inputs)
-            output_last4layers = output[-1][-4:]
-            output_last4layers = torch.cat(output_last4layers, dim=2)
-            return ServeForwardCatResult(output=output_last4layers)
-        except Exception as e:
-            raise HTTPException(500, {"error": str(e)})
-
-    def forward(self, inputs: Union[str, dict, List[str], List[int], List[dict]] = Body(None, embed=True)):
+    def forward(self, inputs: Union[str, dict, List[str], List[int], List[dict]] = Body(None, embed=True),
+        output_mode: str = Body(None, embed=True) ):
         """
         **inputs**:
         **attention_mask**:
@@ -232,13 +189,11 @@ class ServeCommand(BaseTransformersCLICommand):
         # Check we don't have empty string
         if len(inputs) == 0:
             return ServeForwardResult(output=[], attention=[])
-
         try:
             # Forward through the model
-            output = self._pipeline(inputs)
-            output="Boo"
-            output_last4layers = output[-1][-4:]
-            output_last4layers = torch.cat(output_last4layers, dim=2)
+            output = self._pipeline(inputs,output_mode)
             return ServeForwardResult(output=output)
         except Exception as e:
             raise HTTPException(500, {"error": str(e)})
+
+
