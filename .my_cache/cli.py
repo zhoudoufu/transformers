@@ -3,12 +3,6 @@ from os.path import dirname,abspath
 import sys
 project_dir = dirname(dirname(abspath(__file__)))
 sys.path.append(project_dir)
-import uvicorn
-
-class ServingAPP():
-    def __init__(self,app_pipeline):
-        self.app=app_pipeline
-
 
 def main():
     import sys
@@ -44,12 +38,9 @@ def main():
             exit(1)
         # Run
         service = args.func(args)
-        return service
-        #service.run()
+        service.run()
+        print ("Hey, hold on")
 
 
 if __name__ == "__main__":
-    service=main()
-    app = ServingAPP(service._app)
-    uvicorn.run("cli:app", host=service._host, port=service._port, workers=4)
-    print("Hey")
+    main()

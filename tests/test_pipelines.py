@@ -37,7 +37,7 @@ NER_FINETUNED_MODELS = {
 FEATURE_EXTRACT_FINETUNED_MODELS = {
     # ("bert-base-cased", "bert-base-cased", None),
     # ('xlnet-base-cased', 'xlnet-base-cased', None), # Disabled for now as it crash for TF2
-    ("distilbert-base-uncased", "distilbert-base-uncased", '.my_cache/distilbert-pipeline-config.json'),
+    ("distilbert-base-uncased", "distilbert-base-uncased", 'distilbert-pipeline-config.json'),
 }
 
 TF_FEATURE_EXTRACT_FINETUNED_MODELS = {

@@ -23,7 +23,7 @@ def transformers_res(text,mode='forward',host='localhost', output_mode='sum4laye
 
 def test_pack():
     host='localhost'
-    port=8888
+    port=8897
     text="something good"
     res = transformers_res(text, mode='forward',output_mode='sum4layers', host=host, port=port)
     forward_res_1 = json.loads(res.content)

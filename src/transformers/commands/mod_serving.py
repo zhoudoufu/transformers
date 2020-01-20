@@ -195,5 +195,3 @@ class ServeCommand(BaseTransformersCLICommand):
             return ServeForwardResult(output=output)
         except Exception as e:
             raise HTTPException(500, {"error": str(e)})
-
-
