@@ -965,6 +965,8 @@ class PreTrainedTokenizer(object):
         """
         batch_outputs = {}
         for ids_or_pair_ids in batch_text_or_text_pairs:
+            import pdb
+            pdb.set_trace()
             if isinstance(ids_or_pair_ids, (list, tuple)):
                 assert len(ids_or_pair_ids) == 2
                 ids, pair_ids = ids_or_pair_ids

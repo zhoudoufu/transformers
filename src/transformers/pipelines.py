@@ -425,6 +425,8 @@ class Pipeline(_ScikitCompat):
         inputs,output_mode = self._args_parser(*texts, **kwargs)
         if type(inputs)==str:
             inputs=[inputs]
+        elif type(inputs)==dict:
+            inputs=[[inputs['tokens_ids'],None]]
         inputs = self.tokenizer.batch_encode_plus(
             inputs, add_special_tokens=True, return_tensors=self.framework, max_length=self.tokenizer.max_len
         )

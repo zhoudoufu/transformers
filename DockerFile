@@ -6,15 +6,16 @@ RUN pip install uvicorn && \
 
 EXPOSE 5001
 
-COPY ../transformers \
-     /root/transformers
+WORKDIR /root
+
+RUN git clone -b multi-process-serve --single-branch https://github.com/zhoudoufu/transformers.git && \
+    cd transformers
 
 WORKDIR /root/transformers
 
-RUN python ./setup.py  develop && \
+RUN python ./setup.py  develop
 
-
-CMD [ "python" , "/root/src/transformers/commands/mod_serving_multi.py", \
+CMD [ "python" , "./src/transformers/commands/mod_serving_multi.py", \
       "--host",  "0.0.0.0", \
       "--port" ,"5001" , \
       "--workers","36" ]
