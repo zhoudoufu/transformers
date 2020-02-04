@@ -422,7 +422,7 @@ class Pipeline(_ScikitCompat):
 
     def __call__(self, *texts, **kwargs):
         # Parse arguments
-        inputs,output_mode = self._args_parser(*texts, **kwargs)
+        inputs,output_mode,output_pos = self._args_parser(*texts, **kwargs)
         if type(inputs)==str:
             inputs=[inputs]
         elif type(inputs)==dict:
@@ -432,9 +432,9 @@ class Pipeline(_ScikitCompat):
         )
         # Filter out features not available on specific models
         inputs = self.inputs_for_model(inputs)
-        return self._forward(inputs,output_mode)
+        return self._forward(inputs,output_mode,output_pos)
 
-    def _forward(self, inputs,output_mode):
+    def _forward(self, inputs,output_mode,output_pos):
         """
         Internal framework specific forward dispatching.
         Args:
@@ -449,7 +449,7 @@ class Pipeline(_ScikitCompat):
                 predictions = self.model(inputs, training=False)[0]
             else:
                 with torch.no_grad():
-                    inputs = self.ensure_tensor_on_device(**inputs)
+                    inputs = self.ensure_tensor_on_device(**input)
                     if self.model.config.output_hidden_states:
                         # calc sum
                         mdl_output=self.model(**inputs)
@@ -460,7 +460,12 @@ class Pipeline(_ScikitCompat):
                         else:
                             predictions=mdl_output[0]
                     else:
-                        predictions = self.model(**inputs)[0]
+                        predictions = self.model(**inputs)
+            try:
+                predictions=predictions[0][output_pos][:]
+            except:
+                print("length of output_pos is wrong")
+                predictions=output_pos
         return predictions.cpu().numpy()
 
 

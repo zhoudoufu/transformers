@@ -82,7 +82,7 @@ class serving:
 
     @staticmethod
     def forward(inputs: Union[str, dict, List[str], List[int], List[dict]] = Body(None, embed=True),
-        output_mode: str = Body(None, embed=True) ):
+        output_mode: str = Body(None, embed=True), output_pos: int = Body(None,embed=True)):
         """
         **inputs**:
         **attention_mask**:
@@ -93,7 +93,7 @@ class serving:
             return ServeForwardResult(output=[], attention=[])
         try:
             # Forward through the model
-            output = feat_pipeline(inputs,output_mode)
+            output = feat_pipeline(inputs,output_mode,output_pos)
             return ServeForwardResult(output=output)
         except Exception as e:
             raise HTTPException(500, {"error": str(e)})
