@@ -449,7 +449,7 @@ class Pipeline(_ScikitCompat):
                 predictions = self.model(inputs, training=False)[0]
             else:
                 with torch.no_grad():
-                    inputs = self.ensure_tensor_on_device(**input)
+                    inputs = self.ensure_tensor_on_device(**inputs)
                     if self.model.config.output_hidden_states:
                         # calc sum
                         mdl_output=self.model(**inputs)
