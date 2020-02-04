@@ -81,7 +81,7 @@ class serving:
             raise HTTPException(status_code=500, detail={"model": "", "error": str(e)})
 
     @staticmethod
-    def forward( inputs: Union[str, dict, List[str], List[int], List[dict]] = Body(None, embed=True),
+    def forward(inputs: Union[str, dict, List[str], List[int], List[dict]] = Body(None, embed=True),
         output_mode: str = Body(None, embed=True) ):
         """
         **inputs**:

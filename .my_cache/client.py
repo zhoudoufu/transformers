@@ -44,7 +44,7 @@ def test_pack():
     res=transformers_res(text,mode='forward',output_mode='cat4layers',host=host,port=port)
     forward_res_2 = json.loads(res.content)
     """
-    res = transformers_res([1232,2345], mode='forward',output_mode='base', host=host, port=port)
+    res = transformers_res([101, 1996, 3078, 5770, 1997, 5310, 1011, 8857, 2640, 2003, 2008, 1010, 2043, 2864, 2092, 1010, 2009, 21312, 2008, 1996, 4031, 2003, 6179, 1010, 24013, 1010, 1998, 15902, 2000, 1996, 2203, 1011, 5310, 1012, 102], mode='forward',output_mode='base', host=host, port=port)
     forward_res_3 = json.loads(res.content)
     print("HO")
     res=transformers_res(text,mode='tokenize',host=host,port=port)
